@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NEU DRIFT — My Hobby</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --fire:#e84118;
+  --orange:#f0932b;
+  --brown:#6b3a2a;
+  --dark-brown:#3d1f14;
+  --cream:#f5e6d3;
+  --white:#fff8f0;
+  --asphalt:#1a1510;
+  --asphalt2:#231c16;
+  --smoke:rgba(245,230,211,0.07);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--asphalt);font-family:'Barlow Condensed',sans-serif;color:var(--white);cursor:none}
+
+/* ── CUSTOM CURSOR ── */
+#cursor{position:fixed;width:14px;height:14px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s,background .2s;mix-blend-mode:screen}
+#cursor-trail{position:fixed;width:32px;height:32px;border:2px solid var(--orange);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .25s,opacity .3s;opacity:.5}
+body:has(a:hover) #cursor{transform:translate(-50%,-50%) scale(2.5);background:var(--orange)}
+
+/* ── PAGES ── */
+.page{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;transition:clip-path .7s cubic-bezier(.77,0,.175,1),opacity .5s;will-change:clip-path;display:none}
+.page.active{display:block;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.page.exit-left{clip-path:polygon(0 0,0 0,0 100%,0 100%)}
+.page.enter-right{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%)}
+
+/* ── ROAD ANIMATION (global bg) ── */
+#road-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.road-line{position:absolute;left:50%;height:80px;width:6px;background:var(--orange);transform:translateX(-50%);opacity:.18;animation:roadScroll 0.55s linear infinite}
+@keyframes roadScroll{from{top:-80px}to{top:110vh}}
+
+/* ── SPARK PARTICLES ── */
+.spark{position:fixed;pointer-events:none;width:4px;height:4px;border-radius:50%;background:var(--orange);z-index:9997;animation:sparkFly .8s ease-out forwards}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+
+/* ── SMOKE PARTICLES ── */
+.smoke-particle{position:fixed;pointer-events:none;border-radius:50%;background:rgba(180,120,80,0.15);z-index:1;animation:smokeRise 3s ease-out forwards}
+@keyframes smokeRise{0%{opacity:.7;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-120px) scale(4)}}
+
+/* ── CAR ANIMATIONS ── */
+.car-svg{position:absolute;animation:carDrive 3.5s linear infinite}
+@keyframes carDrive{0%{left:-200px;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:110%;opacity:0}}
+.car-svg.drift{animation:carDrift 4s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes carDrift{0%{left:-200px;bottom:20%;transform:rotate(0deg);opacity:0}15%{opacity:1;transform:rotate(0deg)}40%{left:40%;transform:rotate(-22deg)}60%{left:60%;transform:rotate(-10deg)}85%{opacity:1;transform:rotate(-2deg)}100%{left:110%;opacity:0;transform:rotate(0deg)}}
+
+/* ══════════════════════════════
+   PAGE 1 — HOME
+══════════════════════════════ */
+#page-home{background:var(--asphalt);z-index:10}
+.home-inner{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 20px;overflow:hidden}
+
+/* Diagonal asphalt stripes */
+.home-inner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent,transparent 60px,rgba(255,255,255,.015) 60px,rgba(255,255,255,.015) 62px);pointer-events:none}
+
+.home-badge{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:5px;color:var(--orange);text-transform:uppercase;margin-bottom:16px;animation:fadeSlide .8s .2s both}
+.home-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,18vw,14rem);line-height:.9;margin-bottom:8px;position:relative;animation:titleReveal .9s .3s both}
+.home-title .line1{display:block;color:var(--white);text-shadow:0 0 80px rgba(232,65,24,.4)}
+.home-title .line2{display:block;color:var(--fire);-webkit-text-stroke:2px var(--fire);text-shadow:0 0 60px var(--fire),0 0 120px rgba(232,65,24,.6);animation:flicker 3s 2s infinite}
+@keyframes flicker{0%,92%,94%,96%,100%{opacity:1}93%,95%{opacity:.7}}
+.home-sub{font-size:clamp(1rem,2.5vw,1.4rem);letter-spacing:3px;color:var(--cream);opacity:.7;margin-bottom:56px;animation:fadeSlide .8s .5s both}
+
+.nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:780px;width:100%;animation:fadeSlide .8s .7s both}
+.nav-btn{position:relative;background:transparent;border:1.5px solid rgba(240,147,43,.3);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;padding:18px 10px;cursor:none;overflow:hidden;transition:border-color .3s,color .3s;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--fire),var(--orange));transform:translateY(101%);transition:transform .35s cubic-bezier(.77,0,.175,1)}
+.nav-btn::after{content:attr(data-num);position:absolute;top:6px;right:10px;font-size:.65rem;color:var(--orange);opacity:.6;transition:opacity .3s}
+.nav-btn:hover{border-color:var(--fire);color:var(--asphalt)}
+.nav-btn:hover::before{transform:translateY(0)}
+.nav-btn:hover::after{opacity:0}
+.nav-btn span{position:relative;z-index:1}
+.nav-btn:nth-child(1){animation-delay:.8s}.nav-btn:nth-child(2){animation-delay:.9s}.nav-btn:nth-child(3){animation-delay:1s}.nav-btn:nth-child(4){animation-delay:1.1s}.nav-btn:nth-child(5){animation-delay:1.2s}.nav-btn:nth-child(6){animation-delay:1.3s}
+
+/* tire track decoration */
+.tire-track{position:absolute;width:100%;height:8px;background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(240,147,43,.25) 18px,rgba(240,147,43,.25) 36px);pointer-events:none}
+.tire-track.top{top:80px;transform:rotate(-3deg)}
+.tire-track.bottom{bottom:80px;transform:rotate(3deg)}
+
+/* big background number */
+.bg-num{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:40vw;color:rgba(232,65,24,.04);line-height:1;user-select:none;pointer-events:none;right:-5vw;top:50%;transform:translateY(-50%)}
+
+@keyframes fadeSlide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes titleReveal{from{opacity:0;transform:translateY(60px) skewY(4deg)}to{opacity:1;transform:translateY(0) skewY(0)}}
+
+/* ══════════════════════════════
+   INNER PAGES COMMON
+══════════════════════════════ */
+.inner-page{background:var(--asphalt2);min-height:100vh;padding:0}
+.page-header{position:sticky;top:0;z-index:100;background:rgba(26,21,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(240,147,43,.2);display:flex;align-items:center;justify-content:space-between;padding:14px 40px}
+.back-btn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--orange);cursor:none;border:none;background:none;display:flex;align-items:center;gap:8px;transition:color .2s,gap .2s;padding:0}
+.back-btn:hover{color:var(--fire);gap:14px}
+.page-id{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:4px;color:rgba(245,230,211,.3)}
+.page-title-header{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:4px;color:var(--cream)}
+
+.content-wrap{max-width:1100px;margin:0 auto;padding:60px 40px}
+
+/* hero banner inside page */
+.page-hero{position:relative;height:320px;overflow:hidden;display:flex;align-items:flex-end;padding:40px;background:linear-gradient(135deg,var(--dark-brown) 0%,var(--asphalt) 100%)}
+.page-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--asphalt2) 0%,transparent 60%)}
+.page-hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,7rem);line-height:1;position:relative;z-index:1;color:var(--white)}
+.page-hero-title em{color:var(--fire);font-style:normal}
+.page-hero-num{position:absolute;right:40px;top:50%;transform:translateY(-60%);font-family:'Bebas Neue',sans-serif;font-size:18rem;color:rgba(232,65,24,.07);line-height:1;user-select:none;z-index:0}
+
+/* stripe accent */
+.stripe-bar{height:5px;background:linear-gradient(90deg,var(--fire),var(--orange),var(--brown));margin-bottom:40px}
+
+/* text blocks */
+.lead-text{font-size:1.25rem;font-weight:300;line-height:1.8;color:var(--cream);opacity:.9;margin-bottom:32px}
+.body-text{font-size:1.05rem;font-weight:300;line-height:1.9;color:rgba(245,230,211,.7);margin-bottom:24px}
+.highlight{color:var(--orange);font-weight:600}
+
+/* fact cards */
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin:40px 0}
+.fact-card{background:rgba(107,58,42,.15);border:1px solid rgba(240,147,43,.2);padding:28px 24px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);position:relative;overflow:hidden;transition:transform .3s,background .3s}
+.fact-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--fire),transparent)}
+.fact-card:hover{transform:translateY(-6px);background:rgba(107,58,42,.3)}
+.fact-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--fire);line-height:1;margin-bottom:6px}
+.fact-label{font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,230,211,.6)}
+
+/* quote block */
+.quote-block{border-left:4px solid var(--fire);padding:20px 32px;margin:40px 0;background:rgba(232,65,24,.06)}
+.quote-block p{font-family:'Barlow',sans-serif;font-size:1.3rem;font-style:italic;color:var(--cream);line-height:1.7}
+.quote-block cite{display:block;margin-top:12px;font-size:.85rem;letter-spacing:2px;color:var(--orange);font-style:normal}
+
+/* technique cards */
+.tech-list{display:flex;flex-direction:column;gap:16px;margin:32px 0}
+.tech-item{display:flex;gap:24px;align-items:flex-start;padding:20px 24px;background:rgba(255,255,255,.03);border:1px solid rgba(240,147,43,.12);transition:border-color .3s,background .3s}
+.tech-item:hover{border-color:rgba(240,147,43,.4);background:rgba(240,147,43,.05)}
+.tech-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--fire);line-height:1;min-width:50px}
+.tech-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--orange);margin-bottom:6px}
+.tech-desc{font-size:.9rem;color:rgba(245,230,211,.65);line-height:1.7}
+
+/* timeline */
+.timeline{position:relative;padding-left:40px;margin:32px 0}
+.timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--fire),var(--brown))}
+.tl-item{position:relative;margin-bottom:36px}
+.tl-item::before{content:'';position:absolute;left:-34px;top:6px;width:14px;height:14px;background:var(--fire);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:diamondPulse 2s infinite}
+@keyframes diamondPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.tl-year{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--orange);letter-spacing:3px}
+.tl-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--cream);margin-bottom:6px}
+.tl-text{font-size:.9rem;color:rgba(245,230,211,.6);line-height:1.7}
+
+/* gallery grid */
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:32px 0}
+.gallery-cell{aspect-ratio:4/3;background:var(--brown);display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;position:relative;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);transition:transform .3s}
+.gallery-cell:hover{transform:scale(1.04)}
+.gallery-cell::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,65,24,.2),transparent)}
+.gallery-cell.wide{grid-column:span 2}
+
+/* ── car in pages ── */
+.page-car-lane{position:relative;height:60px;overflow:hidden;margin:40px 0;border-top:1px dashed rgba(240,147,43,.2);border-bottom:1px dashed rgba(240,147,43,.2)}
+
+/* ══ NEU badge ══ */
+.neu-badge{display:inline-block;background:linear-gradient(135deg,var(--fire),var(--orange));color:var(--asphalt);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;padding:6px 18px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);margin-bottom:32px}
+
+/* enter animations */
+.page.active .anim-in{animation:pageItemIn .6s both}
+.anim-in:nth-child(1){animation-delay:.1s}
+.anim-in:nth-child(2){animation-delay:.2s}
+.anim-in:nth-child(3){animation-delay:.3s}
+.anim-in:nth-child(4){animation-delay:.4s}
+.anim-in:nth-child(5){animation-delay:.5s}
+.anim-in:nth-child(6){animation-delay:.6s}
+@keyframes pageItemIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--asphalt)}::-webkit-scrollbar-thumb{background:var(--fire);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- ROAD BG (will be populated by JS) -->
+<div id="road-bg"></div>
+
+<!-- ══════════════════════════════
+     PAGE 1 — HOME
+══════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="home-inner">
+    <div class="bg-num">86</div>
+    <div class="tire-track top"></div>
+    <div class="tire-track bottom"></div>
+
+    <!-- animated car -->
+    <svg class="car-svg drift" style="position:absolute;bottom:12%;width:160px;" viewBox="0 0 160 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="120" height="26" rx="4" fill="#3d1f14"/>
+      <rect x="35" y="10" width="80" height="22" rx="3" fill="#6b3a2a"/>
+      <rect x="42" y="13" width="30" height="14" rx="2" fill="rgba(240,147,43,0.3)"/>
+      <rect x="78" y="13" width="30" height="14" rx="2" fill="rgba(240,147,43,0.3)"/>
+      <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#e84118" stroke-width="2"/>
+      <circle cx="45" cy="46" r="5" fill="#3d1f14"/>
+      <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#e84118" stroke-width="2"/>
+      <circle cx="115" cy="46" r="5" fill="#3d1f14"/>
+      <rect x="20" y="28" width="10" height="6" rx="1" fill="#f0932b"/>
+      <rect x="130" y="28" width="10" height="6" rx="1" fill="#e84118" opacity=".5"/>
+      <!-- smoke -->
+      <ellipse cx="8" cy="33" rx="12" ry="6" fill="rgba(107,58,42,0.3)" style="animation:smokePuff 1s ease-out infinite"/>
+    </svg>
+
+    <!-- second car -->
+    <svg class="car-svg" style="position:absolute;top:22%;width:100px;animation-delay:1.8s;animation-duration:4s;" viewBox="0 0 160 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="120" height="26" rx="4" fill="#2a1208"/>
+      <rect x="35" y="10" width="80" height="22" rx="3" fill="#e84118"/>
+      <rect x="42" y="13" width="30" height="14" rx="2" fill="rgba(255,200,100,0.25)"/>
+      <rect x="78" y="13" width="30" height="14" rx="2" fill="rgba(255,200,100,0.25)"/>
+      <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="2"/>
+      <circle cx="45" cy="46" r="5" fill="#3d1f14"/>
+      <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="2"/>
+      <circle cx="115" cy="46" r="5" fill="#3d1f14"/>
+      <rect x="20" y="28" width="10" height="6" rx="1" fill="#fff8f0"/>
+      <rect x="130" y="28" width="10" height="6" rx="1" fill="#e84118" opacity=".4"/>
+    </svg>
+
+    <div class="home-badge">My Hobby Project — NEU 2025</div>
+    <h1 class="home-title">
+      <span class="line1">NEU</span>
+      <span class="line2">DRIFT</span>
+    </h1>
+    <p class="home-sub">The Art of Controlled Chaos</p>
+
+    <nav class="nav-grid">
+      <button class="nav-btn" data-num="01" onclick="goTo('page-what')"><span>What is Drift?</span></button>
+      <button class="nav-btn" data-num="02" onclick="goTo('page-history')"><span>History</span></button>
+      <button class="nav-btn" data-num="03" onclick="goTo('page-techniques')"><span>Techniques</span></button>
+      <button class="nav-btn" data-num="04" onclick="goTo('page-cars')"><span>Dream Cars</span></button>
+      <button class="nav-btn" data-num="05" onclick="goTo('page-events')"><span>Events</span></button>
+      <button class="nav-btn" data-num="06" onclick="goTo('page-personal')"><span>My Story</span></button>
+    </nav>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 2 — WHAT IS DRIFT
+══════════════════════════════ -->
+<div class="page" id="page-what">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">WHAT IS DRIFTING</span>
+      <span class="page-id">01 / 06</span>
+    </div>
+    <div class="page-hero">
+      <div class="page-hero-num">01</div>
+      <h2 class="page-hero-title">WHAT IS <em>DRIFTING?</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <div class="neu-badge anim-in">NEU DRIFT CLUB</div>
+      <p class="lead-text anim-in">
+        Drifting is a <span class="highlight">high-skill driving technique</span> where the driver intentionally oversteers, causing the rear wheels to lose traction and the car to slide sideways through corners — all while maintaining full control.
+      </p>
+      <p class="body-text anim-in">
+        Unlike traditional motorsport where grip is everything, drifting is judged on <span class="highlight">angle, speed, line, and style</span>. The car is meant to be dancing on the edge of control — that fine line between genius and disaster. Judges and fans reward drivers who push closest to that limit.
+      </p>
+
+      <!-- car lane -->
+      <div class="page-car-lane anim-in">
+        <svg class="car-svg" style="width:90px;bottom:8px;" viewBox="0 0 160 60" fill="none">
+          <rect x="20" y="20" width="120" height="26" rx="4" fill="#3d1f14"/>
+          <rect x="35" y="10" width="80" height="22" rx="3" fill="#e84118"/>
+          <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="2"/><circle cx="45" cy="46" r="5" fill="#2a1208"/>
+          <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="2"/><circle cx="115" cy="46" r="5" fill="#2a1208"/>
+          <rect x="20" y="28" width="10" height="6" rx="1" fill="#fff8f0"/>
+        </svg>
+      </div>
+
+      <div class="fact-grid anim-in">
+        <div class="fact-card"><div class="fact-num">360°</div><div class="fact-label">Rotation Control</div></div>
+        <div class="fact-card"><div class="fact-num">160+</div><div class="fact-label">km/h Entry Speed</div></div>
+        <div class="fact-card"><div class="fact-num">80%</div><div class="fact-label">Rear Wheel Power</div></div>
+        <div class="fact-card"><div class="fact-num">3s</div><div class="fact-label">Avg Corner Time</div></div>
+      </div>
+
+      <div class="quote-block anim-in">
+        <p>"Drifting is not about going fast — it's about going sideways fast. And making it look absolutely beautiful."</p>
+        <cite>— Keiichi Tsuchiya, The Drift King</cite>
+      </div>
+
+      <p class="body-text anim-in">
+        At NEU, I discovered drifting through the university circuit events. Watching cars slide in perfect arcs around corners — the smell of rubber, the sound of screaming engines — it completely hooked me. This isn't just motorsport. It's an <span class="highlight">art form</span>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 3 — HISTORY
+══════════════════════════════ -->
+<div class="page" id="page-history">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">HISTORY OF DRIFT</span>
+      <span class="page-id">02 / 06</span>
+    </div>
+    <div class="page-hero" style="background:linear-gradient(135deg,#1a0d08,#231c16)">
+      <div class="page-hero-num">02</div>
+      <h2 class="page-hero-title">BORN IN <em>JAPAN</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <p class="lead-text anim-in">
+        Drifting was born on the <span class="highlight">mountain passes of Japan</span> in the 1970s — the touge roads where street racers found that sliding was sometimes faster, and always more spectacular.
+      </p>
+      <div class="timeline anim-in">
+        <div class="tl-item">
+          <div class="tl-year">1970s</div>
+          <div class="tl-title">THE TOUGE ORIGINS</div>
+          <div class="tl-text">Japanese mountain racers discover that controlled oversteer on narrow touge passes gives them a competitive edge. Underground racing culture begins to form around the style.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1988</div>
+          <div class="tl-title">KEIICHI TSUCHIYA</div>
+          <div class="tl-text">The legendary "Drift King" releases a video showcasing his drifting techniques on public roads. The tape spreads like wildfire through Japan's car community and officially births drifting as a discipline.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1996</div>
+          <div class="tl-title">D1 GRAND PRIX FOUNDED</div>
+          <div class="tl-text">Japan establishes the world's first official drifting competition series. Drifting goes from underground phenomenon to legitimate motorsport with real rules and real champions.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2004</div>
+          <div class="tl-title">FORMULA DRIFT — USA</div>
+          <div class="tl-text">North America launches its own championship series. Drifting explodes globally. The Fast & Furious franchise brings drift culture to mainstream audiences worldwide.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">TODAY</div>
+          <div class="tl-title">GLOBAL PHENOMENON</div>
+          <div class="tl-text">Drift competitions run on every continent. The sport has inspired a generation of drivers including fans right here at NEU — including me.</div>
+        </div>
+      </div>
+
+      <div class="page-car-lane anim-in">
+        <svg class="car-svg" style="width:110px;bottom:6px;animation-duration:2.8s;" viewBox="0 0 160 60" fill="none">
+          <rect x="20" y="20" width="120" height="26" rx="4" fill="#2a1208"/>
+          <rect x="35" y="10" width="80" height="22" rx="3" fill="#6b3a2a"/>
+          <rect x="42" y="13" width="66" height="14" rx="2" fill="rgba(240,147,43,.2)"/>
+          <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#e84118" stroke-width="2"/><circle cx="45" cy="46" r="5" fill="#1a1510"/>
+          <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#e84118" stroke-width="2"/><circle cx="115" cy="46" r="5" fill="#1a1510"/>
+          <rect x="20" y="28" width="10" height="6" rx="1" fill="#f5e6d3"/>
+          <text x="60" y="36" font-size="9" fill="#f0932b" font-family="monospace">D1GP</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 4 — TECHNIQUES
+══════════════════════════════ -->
+<div class="page" id="page-techniques">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">TECHNIQUES</span>
+      <span class="page-id">03 / 06</span>
+    </div>
+    <div class="page-hero" style="background:linear-gradient(135deg,#200e05,#1a1510)">
+      <div class="page-hero-num">03</div>
+      <h2 class="page-hero-title">MASTER THE <em>SLIDE</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <p class="lead-text anim-in">
+        Drifting looks chaotic from the outside. On the inside, it's a precise symphony of <span class="highlight">throttle, steering, clutch, and weight transfer</span> — all happening in fractions of a second.
+      </p>
+      <div class="tech-list anim-in">
+        <div class="tech-item">
+          <div class="tech-num">01</div>
+          <div><div class="tech-name">CLUTCH KICK</div><div class="tech-desc">The driver rapidly dips and releases the clutch at high RPM to send a sudden shock through the drivetrain, breaking rear traction. It's the most common initiation technique — snappy, loud, and very satisfying.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num">02</div>
+          <div><div class="tech-name">HANDBRAKE ENTRY</div><div class="tech-desc">Yanking the handbrake locks the rear wheels mid-corner, forcing a rotation. Popular in tight hairpins. Requires perfect timing — too early and you spin, too late and nothing happens.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num">03</div>
+          <div><div class="tech-name">FEINT / SCANDINAVIAN FLICK</div><div class="tech-desc">The driver sways the car away from the corner, then sharply turns in. The pendulum effect transfers weight and initiates the slide. Elegant, smooth, and extremely fast.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num">04</div>
+          <div><div class="tech-name">POWER OVERSTEER</div><div class="tech-desc">Pure horsepower overwhelming rear grip. The driver floors the throttle mid-corner and controls the slide purely with steering angle and throttle modulation. Requires serious power and serious skill.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num">05</div>
+          <div><div class="tech-name">TANDEM DRIFT</div><div class="tech-desc">Two cars sliding together in formation — the follow car must mirror every movement of the lead car at just inches of separation. The most spectacular and dangerous discipline in drifting.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 5 — DREAM CARS
+══════════════════════════════ -->
+<div class="page" id="page-cars">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">DREAM CARS</span>
+      <span class="page-id">04 / 06</span>
+    </div>
+    <div class="page-hero" style="background:linear-gradient(135deg,#3d1f14,#0d0f14)">
+      <div class="page-hero-num">04</div>
+      <h2 class="page-hero-title">DREAM <em>MACHINES</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <p class="lead-text anim-in">
+        Not every car can drift. The <span class="highlight">best drift machines</span> share rear-wheel drive, high power, and a chassis that loves to rotate. These are the icons.
+      </p>
+
+      <div class="fact-grid anim-in" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">🇯🇵</div>
+          <div class="fact-num" style="font-size:2rem">NISSAN S13/S14</div>
+          <div class="fact-label">The People's Drift Car — lightweight, balanced, everywhere</div>
+        </div>
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">🔥</div>
+          <div class="fact-num" style="font-size:2rem">TOYOTA AE86</div>
+          <div class="fact-label">Keiichi's weapon of choice — the legend that started it all</div>
+        </div>
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">⚡</div>
+          <div class="fact-num" style="font-size:2rem">MAZDA RX-7</div>
+          <div class="fact-label">Rotary screaming at redline — perfect balance, perfect sound</div>
+        </div>
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">🏆</div>
+          <div class="fact-num" style="font-size:2rem">BMW E36/E46</div>
+          <div class="fact-label">European muscle meets Japanese style — beloved globally</div>
+        </div>
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">🎌</div>
+          <div class="fact-num" style="font-size:2rem">NISSAN GTR R32</div>
+          <div class="fact-label">Godzilla — raw power that destroys tires for fun</div>
+        </div>
+        <div class="fact-card">
+          <div style="font-size:2.5rem;margin-bottom:12px">💨</div>
+          <div class="fact-num" style="font-size:2rem">TOYOTA SUPRA MK4</div>
+          <div class="fact-label">2JZ engine — the most legendary swap platform in drift</div>
+        </div>
+      </div>
+
+      <div class="page-car-lane anim-in">
+        <svg class="car-svg drift" style="width:130px;bottom:5px;" viewBox="0 0 160 60" fill="none">
+          <rect x="20" y="20" width="120" height="26" rx="4" fill="#3d1f14"/>
+          <rect x="35" y="10" width="80" height="22" rx="3" fill="#e84118"/>
+          <rect x="42" y="13" width="30" height="14" rx="2" fill="rgba(245,230,211,.15)"/>
+          <rect x="78" y="13" width="30" height="14" rx="2" fill="rgba(245,230,211,.15)"/>
+          <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="3"/>
+          <circle cx="45" cy="46" r="4" fill="#f0932b"/>
+          <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#f0932b" stroke-width="3"/>
+          <circle cx="115" cy="46" r="4" fill="#f0932b"/>
+          <rect x="130" y="28" width="12" height="6" rx="1" fill="#e84118" opacity=".6"/>
+          <rect x="20" y="28" width="12" height="6" rx="1" fill="#fff"/>
+          <text x="58" y="34" font-size="8" fill="#f5e6d3" font-family="monospace" opacity=".7">SUPRA</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 6 — EVENTS
+══════════════════════════════ -->
+<div class="page" id="page-events">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">WORLD EVENTS</span>
+      <span class="page-id">05 / 06</span>
+    </div>
+    <div class="page-hero" style="background:linear-gradient(135deg,#1a0d08,#231c16)">
+      <div class="page-hero-num">05</div>
+      <h2 class="page-hero-title">WORLD <em>EVENTS</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <p class="lead-text anim-in">
+        From the streets of Japan to massive stadium events worldwide, drifting has built a <span class="highlight">global competition circuit</span> that draws millions of fans every year.
+      </p>
+
+      <div class="tech-list anim-in">
+        <div class="tech-item">
+          <div class="tech-num" style="color:var(--orange)">🏁</div>
+          <div><div class="tech-name">FORMULA DRIFT USA</div><div class="tech-desc">The world's premier professional drifting series. Runs across America with stops in Long Beach, Orlando, and Irwindale. 1000hp+ monsters battle for points all season.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num" style="color:var(--orange)">🇯🇵</div>
+          <div><div class="tech-name">D1 GRAND PRIX — JAPAN</div><div class="tech-desc">Where it all started. The original drift championship still running in Japan. Judges use a strict scoring system rating line, angle, speed, and showmanship simultaneously.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num" style="color:var(--orange)">🇬🇧</div>
+          <div><div class="tech-name">BRITISH DRIFT CHAMPIONSHIP</div><div class="tech-desc">Europe's top drift series. Known for incredible venue variety — from airfields to purpose-built tracks. Produces some of the most technically skilled drivers on the planet.</div></div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-num" style="color:var(--orange)">🌍</div>
+          <div><div class="tech-name">IDEC — EURODRIFT</div><div class="tech-desc">The international drift calendar that includes events across Turkey, Cyprus, and Eastern Europe. Growing fast — and one day I hope to attend an event myself with NEU motorsport club.</div></div>
+        </div>
+      </div>
+
+      <div class="quote-block anim-in">
+        <p>"The crowd noise when a driver throws the car sideways at 140km/h — you feel it in your chest. That's what drift events do to you."</p>
+        <cite>— My first drift event experience</cite>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 7 — MY STORY
+══════════════════════════════ -->
+<div class="page" id="page-personal">
+  <div class="inner-page">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← BACK</button>
+      <span class="page-title-header">MY STORY</span>
+      <span class="page-id">06 / 06</span>
+    </div>
+    <div class="page-hero" style="background:linear-gradient(135deg,#200e05,#3d1f14)">
+      <div class="page-hero-num">06</div>
+      <h2 class="page-hero-title">MY <em>STORY</em></h2>
+    </div>
+    <div class="stripe-bar"></div>
+    <div class="content-wrap">
+      <div class="neu-badge anim-in">NEU — North Cyprus</div>
+      <p class="lead-text anim-in">
+        At <span class="highlight">Near East University</span>, I found my passion. The campus, the cars, the community — everything clicked the moment I watched my first live drift event.
+      </p>
+      <p class="body-text anim-in">
+        My journey started with watching YouTube compilations late at night — Ken Block's Gymkhana series, Formula Drift highlights, Japanese touge footage. Then I started noticing that some students at NEU were <span class="highlight">actually drifting</span> in empty lots near campus. The sound of a rear-wheel-drive car being pushed to the limit is something you never forget.
+      </p>
+      <p class="body-text anim-in">
+        I've learned that drifting teaches you so much more than car control. It teaches you about <span class="highlight">risk management, physical precision, and reading a surface</span>. Every patch of asphalt is different. Every corner has a character. You learn to feel the car like an extension of your own body.
+      </p>
+
+      <div class="fact-grid anim-in">
+        <div class="fact-card">
+          <div class="fact-num">NEU</div>
+          <div class="fact-label">My University — where it started</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">RWD</div>
+          <div class="fact-label">Rear-wheel drive — only way to drift</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">∞</div>
+          <div class="fact-label">Hours of videos watched</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">1st</div>
+          <div class="fact-label">Goal — attend a live drift event</div>
+        </div>
+      </div>
+
+      <div class="quote-block anim-in">
+        <p>"Every time I see a car go sideways perfectly — angle held, tyres screaming, smoke rising — I feel like I understand something about beauty that most people never get to experience."</p>
+        <cite>— My relationship with drifting</cite>
+      </div>
+
+      <p class="body-text anim-in">
+        This project is my way of sharing that passion. Drifting isn't just a hobby — it's a <span class="highlight">philosophy of controlled aggression</span>. You push past the limit. You learn the limit. Then you dance right on its edge, forever.
+      </p>
+
+      <div class="page-car-lane anim-in" style="margin-top:48px">
+        <svg class="car-svg drift" style="width:150px;bottom:4px;animation-duration:5s;" viewBox="0 0 160 60" fill="none">
+          <rect x="20" y="20" width="120" height="26" rx="4" fill="#3d1f14"/>
+          <rect x="35" y="10" width="80" height="22" rx="3" fill="#f0932b"/>
+          <rect x="42" y="13" width="30" height="14" rx="2" fill="rgba(255,248,240,.2)"/>
+          <rect x="78" y="13" width="30" height="14" rx="2" fill="rgba(255,248,240,.2)"/>
+          <circle cx="45" cy="46" r="10" fill="#1a1510" stroke="#fff8f0" stroke-width="2"/><circle cx="45" cy="46" r="5" fill="#3d1f14"/>
+          <circle cx="115" cy="46" r="10" fill="#1a1510" stroke="#fff8f0" stroke-width="2"/><circle cx="115" cy="46" r="5" fill="#3d1f14"/>
+          <rect x="20" y="28" width="12" height="6" rx="1" fill="#fff8f0"/>
+          <rect x="130" y="28" width="10" height="6" rx="1" fill="#e84118" opacity=".5"/>
+          <text x="55" y="35" font-size="8" fill="#fff8f0" font-family="monospace">NEU DRIFT</text>
+        </svg>
+      </div>
+
+      <div style="text-align:center;margin-top:60px;padding:32px;border:1px solid rgba(240,147,43,.2);background:rgba(107,58,42,.1)" class="anim-in">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:4px;color:rgba(245,230,211,.4);margin-bottom:16px">PREPARED BY</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--cream);letter-spacing:3px">NEU DRIFT — HOBBY PROJECT</div>
+        <div style="font-size:.85rem;color:rgba(245,230,211,.5);margin-top:8px;letter-spacing:2px">NEAR EAST UNIVERSITY · 2025</div>
+        <div style="margin-top:20px">
+          <a href="mailto:20215679@std.neu.edu.tr" style="color:var(--orange);font-family:'Bebas Neue',sans-serif;letter-spacing:3px;font-size:1.1rem;text-decoration:none;border:1px solid rgba(240,147,43,.4);padding:10px 28px;display:inline-block;transition:background .3s" onmouseover="this.style.background='rgba(240,147,43,0.15)'" onmouseout="this.style.background='transparent'">
+            ✉ 20215679@std.neu.edu.tr
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const trail  = document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  setTimeout(()=>{trail.style.left=mx+'px';trail.style.top=my+'px';},80);
+});
+document.addEventListener('click',e=>{
+  for(let i=0;i<10;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const angle=Math.random()*Math.PI*2;
+    const dist=30+Math.random()*60;
+    s.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;background:${Math.random()>.5?'#e84118':'#f0932b'}`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  }
+});
+
+// ── ROAD LINES ──
+const road=document.getElementById('road-bg');
+const roadW=window.innerWidth;
+const lanePositions=[roadW*.2,roadW*.35,roadW*.5,roadW*.65,roadW*.8];
+lanePositions.forEach((lx,i)=>{
+  const el=document.createElement('div');
+  el.className='road-line';
+  el.style.cssText=`left:${lx}px;animation-delay:${i*.11}s;animation-duration:${0.45+i*.04}s`;
+  road.appendChild(el);
+});
+
+// ── SMOKE PARTICLES ──
+setInterval(()=>{
+  if(Math.random()>.6){
+    const s=document.createElement('div');
+    s.className='smoke-particle';
+    const sz=20+Math.random()*40;
+    s.style.cssText=`left:${Math.random()*100}vw;bottom:${Math.random()*30}vh;width:${sz}px;height:${sz}px;animation-duration:${2+Math.random()*2}s`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),4000);
+  }
+},400);
+
+// ── PAGE TRANSITIONS ──
+let current='page-home';
+function goTo(id){
+  if(id===current)return;
+  const from=document.getElementById(current);
+  const to=document.getElementById(id);
+  // scroll to top of dest
+  to.scrollTop=0;
+  to.style.display='block';
+  // wipe effect
+  from.style.transition='clip-path .65s cubic-bezier(.77,0,.175,1)';
+  to.style.transition='clip-path .65s cubic-bezier(.77,0,.175,1)';
+  // animate from hiding
+  from.style.clipPath='polygon(0 0,100% 0,100% 100%,0 100%)';
+  to.style.clipPath='polygon(100% 0,100% 0,100% 100%,100% 100%)';
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      from.style.clipPath='polygon(0 0,0 0,0 100%,0 100%)';
+      to.style.clipPath='polygon(0 0,100% 0,100% 100%,0 100%)';
+    });
+  });
+  // spark burst on nav
+  for(let i=0;i<20;i++){
+    const sp=document.createElement('div');
+    sp.className='spark';
+    const angle=Math.random()*Math.PI*2;
+    const dist=40+Math.random()*100;
+    const cx=window.innerWidth/2, cy=window.innerHeight/2;
+    sp.style.cssText=`left:${cx}px;top:${cy}px;--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;background:${['#e84118','#f0932b','#fff8f0'][Math.floor(Math.random()*3)]};width:${3+Math.random()*5}px;height:${3+Math.random()*5}px;animation-duration:${0.6+Math.random()*.5}s`;
+    document.body.appendChild(sp);
+    setTimeout(()=>sp.remove(),1200);
+  }
+  setTimeout(()=>{
+    from.classList.remove('active');
+    from.style.display='none';
+    from.style.clipPath='';
+    to.classList.add('active');
+    current=id;
+  },650);
+}
+</script>
+</body>
+</html>

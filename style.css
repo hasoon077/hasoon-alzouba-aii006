@@ -1,150 +1,297 @@
-/* ОБЩИЙ СТИЛЬ */
 body {
+
     font-family: 'League Spartan', sans-serif;
-    background-color: #f0fdf4; 
-    color: #052e16; 
+
+    background-color: #f0fdf4;
+
+    color: #052e16;
+
     margin: 0;
+
     display: flex;
+
     justify-content: center;
+
 }
+
+
 
 .container {
+
     width: 95%;
+
     max-width: 1100px; /* Сделали чуть уже для лучшего вида на ноуте */
+
     padding: 20px 0;
+
 }
+
+
 
 /* КАРТОЧКИ */
+
 .profile-card {
+
     background: #d1fae5;
+
     padding: 25px; /* Уменьшено для компактности */
+
     border-radius: 25px;
+
     border: 1px solid #a7f3d0;
+
     transition: all 0.3s ease;
+
 }
+
+
 
 .profile-card:hover {
+
     transform: translateY(-5px);
+
     box-shadow: 0 15px 30px rgba(0, 108, 53, 0.1);
+
 }
+
+
 
 /* СЕТКА (ДЛЯ КОМПЬЮТЕРА) */
+
 .grid-layout {
+
     display: grid;
+
     grid-template-columns: 1fr 1fr;
+
     gap: 20px;
+
 }
+
+
 
 /* ШАПКА */
+
 .hero-card {
+
     grid-column: span 2;
+
     display: flex;
+
     align-items: center;
+
     gap: 40px;
+
     background: linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%);
+
 }
+
+
 
 .profile-pic {
+
     width: 150px; /* Оптимальный размер для ноута */
+
     height: 150px;
+
     border-radius: 50%;
+
     border: 6px solid #ffffff;
+
     object-fit: cover;
+
 }
 
+
+
 h1 { font-size: 3rem; margin: 0; line-height: 1; color: #052e16; }
+
 .subtitle { font-size: 1.6rem; color: #006C35; margin: 5px 0; font-weight: 600; }
+
 h2 { font-size: 1.8rem; margin: 0; color: #064e3b; }
+
+
 
 .contact-line { display: flex; gap: 20px; font-size: 1rem; color: #065f46; margin-top: 15px; }
 
+
+
 /* ТЕКСТ */
+
 .huge-text { font-size: 1.1rem; line-height: 1.4; color: #052e16; }
 
+
+
 /* НАВЫКИ */
+
 .skills-flex { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+
 .skill-item {
+
     background: #ffffff;
+
     padding: 8px 15px;
+
     border-radius: 10px;
+
     font-size: 0.95rem;
+
     font-weight: 700;
+
     color: #006C35;
+
 }
+
+
 
 /* ЯЗЫКИ */
+
 .lang-container { display: flex; gap: 10px; margin-top: 15px; }
+
 .lang-chip {
+
     flex: 1;
+
     background: #ffffff;
+
     padding: 15px;
+
     text-align: center;
+
     border-radius: 15px;
+
 }
+
 .lang-chip p { font-size: 1.2rem; font-weight: 700; margin: 0; color: #006C35; }
+
 .lang-chip span { font-size: 0.9rem; color: #065f46; }
 
+
+
 /* КНОПКИ */
+
 .action-buttons { display: flex; gap: 15px; margin-top: 20px; }
+
 .btn {
+
     flex: 1;
+
     padding: 15px;
+
     text-align: center;
+
     text-decoration: none;
+
     border-radius: 15px;
+
     font-size: 1.2rem;
+
     font-weight: 700;
+
     transition: 0.3s;
+
 }
+
 .email-btn { background: #006C35; color: white; }
+
 .wa-btn { background: #ffffff; color: #006C35; border: 2px solid #006C35; }
 
+
+
 /* МОБИЛЬНАЯ ВЕРСИЯ (ДЛЯ ТЕЛЕФОНОВ) */
+
 @media (max-width: 768px) {
+
     .container { width: 92%; }
-    
-    .grid-layout { 
-        display: flex; 
-        flex-direction: column; 
-        gap: 15px; 
+
+   
+
+    .grid-layout {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 15px;
+
     }
 
-    .hero-card { 
-        flex-direction: column; 
-        text-align: center; 
+
+
+    .hero-card {
+
+        flex-direction: column;
+
+        text-align: center;
+
         padding: 30px 20px;
+
     }
+
+
 
     .profile-pic {
+
         width: 130px;
+
         height: 130px;
+
     }
+
+
 
     h1 { font-size: 2.2rem; }
+
     .subtitle { font-size: 1.3rem; }
-    
-    .contact-line { 
-        flex-direction: column; 
-        align-items: center; 
-        gap: 8px; 
+
+   
+
+    .contact-line {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 8px;
+
     }
 
-    .action-buttons { 
-        flex-direction: column; 
+
+
+    .action-buttons {
+
+        flex-direction: column;
+
     }
+
+
 
     .skills-flex {
+
         justify-content: center;
+
     }
+
+
 
     .lang-container {
+
         display: grid;
+
         grid-template-columns: 1fr 1fr;
+
     }
 
+
+
     footer { margin-top: 30px; font-size: 0.9rem; }
+
 }
 
+
+
 .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+
 .main-icon { font-size: 2rem; }
+
 footer { text-align: center; margin-top: 40px; color: #065f46; }

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Design Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#0f0f0f;--gray-900:#1a1a1a;--gray-600:#666;--gray-400:#aaa;
+      --gray-200:#e8e8e8;--gray-100:#f4f4f4;--gray-50:#fafafa;
+      --white:#ffffff;
+      --green:#1a6b3a;--green-bg:#f0f7f3;--green-border:#c3dfc9;
+      --red:#8b1a1a;--red-bg:#fdf2f2;--red-border:#f0c8c8;
+      --accent:#0f0f0f;
+    }
+    html,body{width:100%;min-height:100%;overflow-x:hidden}
+    body{background:var(--white);color:var(--black);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6}
+
+    /* ── INTRO ── */
+    #intro{
+      position:fixed;inset:0;z-index:9999;background:var(--white);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      overflow:hidden;
+    }
+    #intro-line{
+      position:absolute;top:0;left:0;right:0;height:2px;
+      background:var(--black);transform:scaleX(0);transform-origin:left;
+      animation:line-in .7s .2s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    #intro-line-b{
+      position:absolute;bottom:0;left:0;right:0;height:2px;
+      background:var(--black);transform:scaleX(0);transform-origin:right;
+      animation:line-in .7s .4s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes line-in{to{transform:scaleX(1)}}
+
+    .intro-eyebrow{
+      font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:500;
+      letter-spacing:.35em;text-transform:uppercase;color:var(--gray-400);
+      opacity:0;animation:fadeUp .7s .8s ease forwards;
+    }
+    .intro-title{
+      font-family:'DM Serif Display',serif;
+      font-size:clamp(3rem,12vw,7.5rem);line-height:.95;
+      text-align:center;color:var(--black);
+      margin-top:12px;
+      opacity:0;animation:slideIn .6s 1s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .intro-title em{font-style:italic;color:var(--gray-600)}
+    .intro-sub{
+      font-size:.8rem;font-weight:300;letter-spacing:.15em;
+      color:var(--gray-400);margin-top:14px;text-transform:uppercase;
+      opacity:0;animation:fadeUp .7s 1.4s ease forwards;
+    }
+    .skip-btn{
+      position:absolute;bottom:28px;right:28px;
+      font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+      color:var(--gray-400);background:none;border:1px solid var(--gray-200);
+      padding:6px 14px;cursor:pointer;transition:all .2s;
+      opacity:0;animation:fadeUp .6s 1.3s ease forwards;
+    }
+    .skip-btn:hover{color:var(--black);border-color:var(--gray-400)}
+
+    #intro.fade-out{animation:wipeOut .7s ease forwards}
+    @keyframes wipeOut{
+      0%{clip-path:inset(0 0 0 0)}
+      100%{clip-path:inset(0 0 100% 0)}
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── PAGE ── */
+    #page{opacity:0;transition:opacity .6s ease}
+    #page.visible{opacity:1}
+
+    /* header */
+    header{
+      border-bottom:1px solid var(--gray-200);
+      padding:52px 40px 36px;
+      max-width:1000px;margin:0 auto;
+    }
+    .hdr-eyebrow{
+      font-size:.68rem;font-weight:500;letter-spacing:.3em;
+      text-transform:uppercase;color:var(--gray-400);margin-bottom:14px;
+    }
+    h1{
+      font-family:'DM Serif Display',serif;
+      font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;
+      color:var(--black);font-weight:400;
+    }
+    h1 em{font-style:italic;color:var(--gray-600)}
+    .hdr-desc{
+      margin-top:12px;font-size:.9rem;font-weight:300;
+      color:var(--gray-600);max-width:480px;
+    }
+
+    /* main */
+    main{max-width:1000px;margin:0 auto;padding:48px 40px 72px}
+
+    /* section label */
+    .section-label{
+      font-size:.65rem;font-weight:500;letter-spacing:.3em;
+      text-transform:uppercase;color:var(--gray-400);
+      margin-bottom:20px;
+      display:flex;align-items:center;gap:12px;
+    }
+    .section-label::after{content:'';flex:1;height:1px;background:var(--gray-200)}
+
+    /* verdict */
+    .verdict{
+      display:inline-flex;align-items:center;gap:7px;
+      font-size:.65rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+      padding:4px 12px;border-radius:20px;margin-bottom:18px;
+    }
+    .verdict .dot{width:6px;height:6px;border-radius:50%}
+    .verdict.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+    .verdict.good .dot{background:var(--green)}
+    .verdict.bad{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+    .verdict.bad .dot{background:var(--red)}
+
+    /* card */
+    .card{
+      border:1px solid var(--gray-200);
+      margin-bottom:48px;
+      background:var(--white);
+    }
+    .card:hover{border-color:var(--gray-400);transition:border-color .2s}
+
+    .card-header{
+      padding:28px 32px 22px;
+      border-bottom:1px solid var(--gray-200);
+      display:grid;grid-template-columns:64px 1fr;gap:0 20px;align-items:start;
+    }
+    .card-num{
+      font-family:'DM Serif Display',serif;font-size:3rem;
+      color:var(--gray-200);line-height:1;margin-top:2px;
+    }
+    .card-title{
+      font-family:'DM Serif Display',serif;font-size:1.6rem;
+      color:var(--black);font-weight:400;margin-bottom:4px;
+    }
+    .card-url{
+      font-size:.75rem;font-weight:400;color:var(--gray-400);letter-spacing:.04em;
+    }
+    .card-url a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gray-200)}
+    .card-url a:hover{color:var(--black);border-color:var(--gray-400)}
+
+    /* Q&A table */
+    .qa-table{width:100%;border-collapse:collapse}
+    .qa-table tr{border-bottom:1px solid var(--gray-100)}
+    .qa-table tr:last-child{border-bottom:none}
+    .qa-table tr:hover{background:var(--gray-50)}
+    .qa-table th{
+      width:34%;padding:16px 32px;
+      font-size:.68rem;font-weight:500;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--gray-600);
+      text-align:left;vertical-align:top;
+      background:var(--gray-50);
+      border-right:1px solid var(--gray-200);
+    }
+    .qa-table td{
+      padding:16px 24px;font-size:.9rem;line-height:1.75;
+      color:var(--gray-900);vertical-align:top;
+    }
+
+    /* reasons */
+    .reasons{list-style:none;margin:8px 0 0;padding:0}
+    .reasons li{
+      padding:7px 0 7px 18px;position:relative;
+      font-size:.9rem;line-height:1.65;color:var(--gray-900);
+      border-bottom:1px solid var(--gray-100);
+    }
+    .reasons li:last-child{border-bottom:none}
+    .reasons li::before{
+      content:'';position:absolute;left:0;top:16px;
+      width:6px;height:6px;border-radius:50%;
+      background:var(--gray-400);
+    }
+    .reasons li strong{font-weight:500;color:var(--black)}
+
+    /* divider */
+    .divider{
+      display:flex;align-items:center;gap:16px;
+      margin:8px 0 44px;color:var(--gray-200);font-size:.7rem;letter-spacing:.2em;
+    }
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gray-200)}
+
+    /* footer */
+    footer{
+      border-top:1px solid var(--gray-200);padding:24px 40px;
+      max-width:1000px;margin:0 auto;
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    }
+    .footer-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-400)}
+    .footer-email{font-size:.8rem;color:var(--black);text-decoration:none;border-bottom:1px solid var(--gray-200)}
+    .footer-email:hover{border-color:var(--black)}
+  </style>
+</head>
+<body>
+
+<!-- ── INTRO ── -->
+<div id="intro">
+  <div id="intro-line"></div>
+  <div id="intro-line-b"></div>
+  <p class="intro-eyebrow">ECC006 · Assignment 8 · Task 2</p>
+  <h2 class="intro-title">Web<br><em>Design</em><br>Analysis</h2>
+  <p class="intro-sub">Appeal vs. Failure</p>
+  <button class="skip-btn" onclick="endIntro()">Skip ›</button>
+</div>
+
+<!-- ── PAGE ── -->
+<div id="page">
+
+  <header>
+    <p class="hdr-eyebrow">ECC006 · Homework Assignment #8 · Task 2</p>
+    <h1>Web Design <em>Analysis</em></h1>
+    <p class="hdr-desc">Two websites examined — one appealing, one unappealing — evaluated across five criteria.</p>
+  </header>
+
+  <main>
+
+    <!-- SITE 1: APPLE -->
+    <p class="section-label">Website One</p>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-num">01</div>
+        <div>
+          <div class="verdict good"><span class="dot"></span>Appealing</div>
+          <p class="card-title">Apple</p>
+          <p class="card-url"><a href="https://www.apple.com" target="_blank" rel="noopener">https://www.apple.com</a></p>
+        </div>
+      </div>
+      <table class="qa-table">
+        <tr>
+          <th>a. URL</th>
+          <td>https://www.apple.com</td>
+        </tr>
+        <tr>
+          <th>b. Does it use tables?</th>
+          <td>Apple.com uses tables only for structured data such as product specification comparisons. Tables are not used for page layout — all layout is CSS-based.</td>
+        </tr>
+        <tr>
+          <th>c. Does it use CSS?</th>
+          <td>Yes, extensively. CSS handles the full page layout via Flexbox and Grid, typography scaling, color theming, hover transitions, scroll animations, and responsive breakpoints for all device sizes.</td>
+        </tr>
+        <tr>
+          <th>d. Appealing — three reasons</th>
+          <td>
+            <ul class="reasons">
+              <li><strong>Minimalist layout with generous whitespace.</strong> Every element feels deliberate. Nothing competes for attention unnecessarily, making the page instantly readable and visually calming.</li>
+              <li><strong>Consistent, refined typography.</strong> Apple's custom typefaces are used with precise sizing hierarchy — bold headings, readable body text, and consistent rhythm that reinforces the premium brand.</li>
+              <li><strong>Smooth, purposeful animations.</strong> Scroll-triggered effects and product showcases feel cinematic rather than gimmicky. They guide the eye naturally without slowing navigation.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>e. Improvements</th>
+          <td>Not applicable — this website is appealing. The only minor critique is that deeply nested product categories can require several taps to reach on mobile.</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="divider">✦ ✦ ✦</div>
+
+    <!-- SITE 2: LING'S CARS -->
+    <p class="section-label">Website Two</p>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-num">02</div>
+        <div>
+          <div class="verdict bad"><span class="dot"></span>Unappealing</div>
+          <p class="card-title">Ling's Cars</p>
+          <p class="card-url"><a href="https://www.lingscars.com" target="_blank" rel="noopener">https://www.lingscars.com</a></p>
+        </div>
+      </div>
+      <table class="qa-table">
+        <tr>
+          <th>a. URL</th>
+          <td>https://www.lingscars.com</td>
+        </tr>
+        <tr>
+          <th>b. Does it use tables?</th>
+          <td>Yes — both for page layout (an outdated practice) and to organize car listings. The combination makes the page structure visually confusing and hard to parse.</td>
+        </tr>
+        <tr>
+          <th>c. Does it use CSS?</th>
+          <td>Yes, but ineffectively. CSS is applied for colors and font sizes, but the choices are chaotic — clashing neon backgrounds, multiple competing text colors per section, and no consistent spacing or visual hierarchy.</td>
+        </tr>
+        <tr>
+          <th>d. Unappealing — three reasons</th>
+          <td>
+            <ul class="reasons">
+              <li><strong>Extreme visual chaos.</strong> The homepage bombards visitors with flashing GIF animations, autoplaying videos, and dozens of competing banners. Every element shouts at the same volume — there is no focal point.</li>
+              <li><strong>No coherent color scheme or typography.</strong> Text appears in red, green, yellow, white, and blue within the same section. Font sizes are inconsistent and many headings are in ALL CAPS with decorative fonts that hurt readability.</li>
+              <li><strong>Confusing navigation and unclear purpose.</strong> A first-time visitor cannot quickly identify how to browse cars or get a quote. Core user goals require significant effort due to information buried under promotional noise.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>e. Improvements</th>
+          <td>
+            <ul class="reasons">
+              <li><strong>Establish a clean 2–3 color palette.</strong> Remove clashing neon backgrounds and replace with neutral whites or light grays that let car photography stand out.</li>
+              <li><strong>Redesign navigation.</strong> A clear top menu with logical categories and a visible "Get a Quote" CTA would immediately improve usability without scrolling.</li>
+              <li><strong>Remove animated GIFs and autoplaying media.</strong> These distract from the product and slow page load. Static images with a single intentional animation would create a more professional impression.</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </main>
+
+  <footer>
+    <span class="footer-label">ECC006 · Homework #8</span>
+    <a href="mailto:20215679@std.neu.edu.tr" class="footer-email">20215679@std.neu.edu.tr</a>
+  </footer>
+
+</div>
+
+<script>
+  const intro = document.getElementById('intro');
+  const timer = setTimeout(endIntro, 3500);
+  function endIntro(){
+    clearTimeout(timer);
+    intro.classList.add('fade-out');
+    setTimeout(()=>{
+      intro.style.display='none';
+      document.getElementById('page').classList.add('visible');
+    },700);
+  }
+</script>
+</body>
+</html>

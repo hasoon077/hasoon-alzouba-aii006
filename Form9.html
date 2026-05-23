@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Music Survey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root{
+      --purple:#7c3aed;
+      --purple-light:#ede9fe;
+      --pink:#ec4899;
+      --pink-light:#fce7f3;
+      --cyan:#06b6d4;
+      --cyan-light:#cffafe;
+      --amber:#f59e0b;
+      --amber-light:#fef3c7;
+      --green:#10b981;
+      --green-light:#d1fae5;
+      --gray-900:#111827;
+      --gray-700:#374151;
+      --gray-500:#6b7280;
+      --gray-300:#d1d5db;
+      --gray-100:#f3f4f6;
+      --white:#ffffff;
+    }
+
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:40px 16px;
+    }
+
+    .page-wrap{
+      width:100%;max-width:620px;
+    }
+
+    /* page title above card */
+    .page-title{
+      text-align:center;margin-bottom:28px;
+    }
+    .page-title h1{
+      font-size:2rem;font-weight:700;color:#fff;
+      letter-spacing:-.02em;
+      text-shadow:0 2px 20px rgba(0,0,0,.25);
+    }
+    .page-title p{
+      font-size:.9rem;color:rgba(255,255,255,.75);
+      margin-top:6px;font-weight:300;
+    }
+
+    /* card */
+    .card{
+      background:var(--white);
+      border-radius:24px;
+      box-shadow:0 24px 60px rgba(0,0,0,.2);
+      overflow:hidden;
+    }
+
+    /* rainbow top bar */
+    .card-bar{
+      height:5px;
+      background:linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b,#10b981,#06b6d4);
+    }
+
+    form{padding:36px 40px 40px}
+
+    /* section heading */
+    .form-section{font-size:.7rem;font-weight:600;letter-spacing:.15em;
+      text-transform:uppercase;color:var(--gray-500);margin:0 0 20px}
+
+    /* ── FIELD ── */
+    .field{margin-bottom:22px}
+    .field label{
+      display:block;font-size:.82rem;font-weight:600;
+      color:var(--gray-700);margin-bottom:7px;
+    }
+    .field input[type="text"],
+    .field input[type="email"],
+    .field textarea,
+    .field select{
+      width:100%;padding:11px 14px;
+      border:1.5px solid var(--gray-300);
+      border-radius:10px;
+      font-family:inherit;font-size:.9rem;color:var(--gray-900);
+      background:var(--white);
+      outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .field input[type="text"]:focus,
+    .field input[type="email"]:focus,
+    .field textarea:focus,
+    .field select:focus{
+      border-color:var(--purple);
+      box-shadow:0 0 0 3px var(--purple-light);
+    }
+    .field textarea{resize:vertical;min-height:80px}
+    .field select{cursor:pointer}
+
+    /* ── DIVIDER ── */
+    .divider{height:1px;background:var(--gray-100);margin:28px 0}
+
+    /* ── FIELDSET ── */
+    fieldset{
+      border:1.5px solid var(--gray-300);
+      border-radius:12px;
+      padding:18px 20px 14px;
+      margin-bottom:22px;
+    }
+    legend{
+      font-size:.8rem;font-weight:600;
+      padding:0 8px;color:var(--gray-700);
+      letter-spacing:.02em;
+    }
+
+    /* radio fieldset accent */
+    fieldset.radio-group{border-color:#d8b4fe}
+    fieldset.radio-group legend{color:var(--purple)}
+
+    /* checkbox fieldset accent */
+    fieldset.check-group{border-color:#fbcfe8}
+    fieldset.check-group legend{color:var(--pink)}
+
+    /* ── RADIO ── */
+    .radio-option{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 10px;border-radius:8px;cursor:pointer;
+      transition:background .15s;margin-bottom:4px;
+    }
+    .radio-option:hover{background:var(--purple-light)}
+    .radio-option input[type="radio"]{
+      appearance:none;-webkit-appearance:none;
+      width:18px;height:18px;border-radius:50%;
+      border:2px solid var(--gray-300);
+      flex-shrink:0;cursor:pointer;
+      transition:border-color .2s;position:relative;
+    }
+    .radio-option input[type="radio"]:checked{
+      border-color:var(--purple);border-width:5px;
+      background:var(--white);
+    }
+    .radio-option span{font-size:.9rem;color:var(--gray-700);font-weight:400}
+
+    /* ── CHECKBOX ── */
+    .check-option{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 10px;border-radius:8px;cursor:pointer;
+      transition:background .15s;margin-bottom:4px;
+    }
+    .check-option:hover{background:var(--pink-light)}
+    .check-option input[type="checkbox"]{
+      appearance:none;-webkit-appearance:none;
+      width:18px;height:18px;border-radius:5px;
+      border:2px solid var(--gray-300);
+      flex-shrink:0;cursor:pointer;
+      transition:all .15s;position:relative;
+    }
+    .check-option input[type="checkbox"]:checked{
+      background:var(--pink);border-color:var(--pink);
+    }
+    .check-option input[type="checkbox"]:checked::after{
+      content:'';position:absolute;
+      left:4px;top:1px;width:6px;height:10px;
+      border:2px solid #fff;border-top:none;border-left:none;
+      transform:rotate(45deg);
+    }
+    .check-option span{font-size:.9rem;color:var(--gray-700);font-weight:400}
+
+    /* ── SELECT ── */
+    .field select{
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;
+      padding-right:36px;
+    }
+    .field select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-light)}
+
+    /* select accent label */
+    .select-label{color:var(--cyan) !important}
+
+    /* ── TEXTAREA accent ── */
+    .textarea-label{color:var(--amber) !important}
+    .field textarea:focus{
+      border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-light);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-row{display:flex;gap:12px;margin-top:30px}
+
+    .btn-submit{
+      flex:1;padding:13px 24px;
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      color:#fff;font-family:inherit;font-size:.9rem;font-weight:600;
+      border:none;border-radius:10px;cursor:pointer;
+      letter-spacing:.02em;
+      transition:opacity .2s,transform .1s;
+      box-shadow:0 4px 14px rgba(124,58,237,.35);
+    }
+    .btn-submit:hover{opacity:.9}
+    .btn-submit:active{transform:scale(.98)}
+
+    .btn-reset{
+      padding:13px 24px;
+      background:var(--gray-100);
+      color:var(--gray-700);font-family:inherit;font-size:.9rem;font-weight:500;
+      border:1.5px solid var(--gray-300);border-radius:10px;cursor:pointer;
+      transition:background .2s,transform .1s;
+    }
+    .btn-reset:hover{background:var(--gray-300)}
+    .btn-reset:active{transform:scale(.98)}
+
+    /* two-col name+email */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:480px){.two-col{grid-template-columns:1fr}form{padding:28px 24px 32px}}
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="page-title">
+    <h1>🎵 Music Survey</h1>
+    <p>Tell us about your music taste</p>
+  </div>
+
+  <div class="card">
+    <div class="card-bar"></div>
+
+    <form action="http://www.uyar.com/teaching/ecc006/2017spring/login.php" method="post">
+
+      <!-- Name + Email -->
+      <div class="two-col">
+        <div class="field">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" placeholder="Full name"/>
+        </div>
+        <div class="field">
+          <label for="email">E-Mail Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com"/>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Checkbox group -->
+      <fieldset class="check-group">
+        <legend>🎸 Select Your Favorite Types of Music</legend>
+        <label class="check-option"><input type="checkbox" name="genre" value="pop"/><span>Pop</span></label>
+        <label class="check-option"><input type="checkbox" name="genre" value="classical"/><span>Classical</span></label>
+        <label class="check-option"><input type="checkbox" name="genre" value="rock"/><span>Rock</span></label>
+        <label class="check-option"><input type="checkbox" name="genre" value="folk"/><span>Folk</span></label>
+        <label class="check-option"><input type="checkbox" name="genre" value="rap"/><span>Rap</span></label>
+        <label class="check-option"><input type="checkbox" name="genre" value="other"/><span>Other</span></label>
+      </fieldset>
+
+      <!-- Radio group -->
+      <fieldset class="radio-group">
+        <legend>💿 How Often Do You Purchase Music?</legend>
+        <label class="radio-option"><input type="radio" name="frequency" value="weekly"/><span>Weekly</span></label>
+        <label class="radio-option"><input type="radio" name="frequency" value="few"/><span>A few CDs each year</span></label>
+        <label class="radio-option"><input type="radio" name="frequency" value="monthly"/><span>Monthly</span></label>
+        <label class="radio-option"><input type="radio" name="frequency" value="never"/><span>Never purchase</span></label>
+      </fieldset>
+
+      <!-- Select box -->
+      <div class="field">
+        <label class="select-label" for="location">🎧 Where Do You Listen to Music?</label>
+        <select id="location" name="location" size="3">
+          <option value="home">At home</option>
+          <option value="car">In the car</option>
+          <option value="mp3">Anywhere (MP3 Player)</option>
+          <option value="gym">At the gym</option>
+          <option value="work">At work</option>
+        </select>
+      </div>
+
+      <!-- Textarea -->
+      <div class="field">
+        <label class="textarea-label" for="role">✍️ What role does music play in your life?</label>
+        <textarea id="role" name="role" cols="60" rows="3" placeholder="Share your thoughts…"></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="btn-row">
+        <button type="submit" class="btn-submit">Submit Survey</button>
+        <button type="reset" class="btn-reset">Reset</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer email link -->
+  <p style="text-align:center;margin-top:20px;font-size:.8rem;color:rgba(255,255,255,.7);font-family:'Plus Jakarta Sans',sans-serif;">
+    Questions? &nbsp;
+    <a href="mailto:20215679@std.neu.edu.tr"
+       style="color:#fff;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:1px;transition:border-color .2s;">
+      20215679@std.neu.edu.tr
+    </a>
+  </p>
+</div>
+
+</body>
+</html>
